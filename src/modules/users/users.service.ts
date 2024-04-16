@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './models/user.model';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDTO } from './dto';
-import { AppError } from '../../common/constants/errors';
+import { CreateUserDTO, UpdateUserDTO } from './dto';
 
 @Injectable()
 export class UsersService {
@@ -11,25 +10,62 @@ export class UsersService {
     @InjectModel(User) private readonly userRepository: typeof User,
   ) {}
 
-  async hashPassword(password) {
-    return bcrypt.hash(password, 10);
+  async hashPassword(password: string): Promise<string> {
+    try {
+      return bcrypt.hash(password, 10);
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  async findUserByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+  async findUserByEmail(email: string): Promise<User> {
+    try {
+      return this.userRepository.findOne({ where: { email } });
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   async createUser(dto: CreateUserDTO): Promise<CreateUserDTO> {
-    const userExist = await this.findUserByEmail(dto.email);
-    if (userExist) {
-      throw new BadRequestException(AppError.USER_EXIST);
+    try {
+      dto.password = await this.hashPassword(dto.password);
+      await this.userRepository.create({
+        name: dto.name,
+        email: dto.email,
+        password: dto.password,
+      });
+      return dto;
+    } catch (error) {
+      throw new Error(error);
     }
-    dto.password = await this.hashPassword(dto.password);
-    await this.userRepository.create({
-      name: dto.name,
-      email: dto.email,
-      password: dto.password,
-    });
-    return dto;
+  }
+
+  async publicUser(email: string): Promise<User> {
+    try {
+      return this.userRepository.findOne({
+        where: { email },
+        attributes: { exclude: ['password'] },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async updateUser(email: string, dto: UpdateUserDTO): Promise<UpdateUserDTO> {
+    try {
+      await this.userRepository.update(dto, { where: { email } });
+      return dto;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+  async deleteUser(email: string): Promise<boolean> {
+    try {
+      await this.userRepository.destroy({ where: { email } });
+      return true;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }

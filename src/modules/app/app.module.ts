@@ -7,6 +7,10 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import configurations from '../../configurations';
 import { User } from '../users/models/user.model';
 import * as pg from 'pg';
+import { AuthModule } from '../auth/auth.module';
+import { TokenModule } from '../token/token.module';
+import { ToDo } from '../to-dos/models/to-dos.model';
+import { ToDosModule } from '../to-dos/to-dos.module';
 
 @Module({
   imports: [
@@ -27,10 +31,13 @@ import * as pg from 'pg';
         database: configService.get('db_name'),
         synchronize: true,
         autoLoadModels: true,
-        models: [User],
+        models: [User, ToDo],
       }),
     }),
     UsersModule,
+    AuthModule,
+    TokenModule,
+    ToDosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
