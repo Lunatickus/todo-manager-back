@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import configurations from '../../configurations';
 import { User } from '../users/models/user.model';
+import * as pg from 'pg';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { User } from '../users/models/user.model';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         dialect: 'postgres',
+        dialectModule: pg,
         host: configService.get('db_host'),
         port: configService.get('db_port'),
         username: configService.get('db_user'),
