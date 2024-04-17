@@ -11,6 +11,12 @@ export class ToDosService {
 
   async createToDo(user, dto: ToDoDto): Promise<ToDoDto> {
     try {
+      if (dto.parentToDoId) {
+        await this.toDoRepository.update(
+          { hasSubToDos: true },
+          { where: { id: dto.parentToDoId } },
+        );
+      }
       const toDo = {
         user: user.id,
         title: dto.title,
