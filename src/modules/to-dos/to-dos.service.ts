@@ -11,12 +11,6 @@ export class ToDosService {
 
   async createToDo(user, dto: ToDoDto): Promise<ToDoDto> {
     try {
-      if (dto.parentToDoId) {
-        await this.toDoRepository.update(
-          { hasSubToDos: true },
-          { where: { id: dto.parentToDoId } },
-        );
-      }
       const toDo = {
         user: user.id,
         title: dto.title,
@@ -31,40 +25,10 @@ export class ToDosService {
     }
   }
 
-  async getAllToDos(id: number): Promise<ToDoDto[]> {
-    try {
-      return this.toDoRepository.findAll({
-        where: { user: id, parentToDoId: null },
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  async getSubToDos(id: number, toDoId: string): Promise<ToDoDto[]> {
+  async getToDos(id: number, toDoId: string): Promise<ToDoDto[]> {
     try {
       return this.toDoRepository.findAll({
         where: { user: id, parentToDoId: toDoId },
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
-  }
-
-  async updateToDoCompleted(
-    userId: number,
-    toDoId: string,
-    dto: UpdateToDoDto,
-  ): Promise<UpdateToDoDto> {
-    try {
-      await this.toDoRepository.update(dto, {
-        where: { parentToDoId: toDoId },
-      });
-      await this.toDoRepository.update(dto, {
-        where: { id: toDoId, user: userId },
-      });
-      return this.toDoRepository.findOne({
-        where: { id: toDoId, user: userId },
       });
     } catch (error) {
       throw new Error(error);
@@ -77,6 +41,19 @@ export class ToDosService {
     dto: UpdateToDoDto,
   ): Promise<UpdateToDoDto> {
     try {
+      if (dto.completed !== null) {
+        await this.toDoRepository.update(dto, {
+          where: { parentToDoId: toDoId },
+        });
+      }
+      // const resp = await Promise.all([
+      //   this.toDoRepository.update(dto, {
+      //     where: { id: toDoId, user: userId },
+      //   }),
+      //   this.toDoRepository.findOne({
+      //     where: { id: toDoId, user: userId },
+      //   }),
+      // ]);
       await this.toDoRepository.update(dto, {
         where: { id: toDoId, user: userId },
       });

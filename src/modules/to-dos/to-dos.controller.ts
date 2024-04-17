@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -25,28 +26,13 @@ export class ToDosController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('parents')
-  getAllToDos(@Req() request): Promise<ToDoDto[]> {
+  @Get()
+  getToDos(@Query('id') toDoId: string, @Req() request): Promise<ToDoDto[]> {
     const { id } = request.user;
-    return this.toDosService.getAllToDos(id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id/subToDos')
-  getSubToDos(@Param('id') toDoId: string, @Req() request): Promise<ToDoDto[]> {
-    const { id } = request.user;
-    return this.toDosService.getSubToDos(id, toDoId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Patch(':id/completed')
-  updateToDoCompleted(
-    @Param('id') toDoId: string,
-    @Body() toDoDTO: UpdateToDoDto,
-    @Req() request,
-  ): Promise<UpdateToDoDto> {
-    const { id } = request.user;
-    return this.toDosService.updateToDoCompleted(id, toDoId, toDoDTO);
+    if (!toDoId) {
+      toDoId = null;
+    }
+    return this.toDosService.getToDos(id, toDoId);
   }
 
   @UseGuards(JwtAuthGuard)

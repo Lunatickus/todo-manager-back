@@ -13,10 +13,6 @@ export class ToDoDto {
   completed?: boolean;
 
   @IsOptional()
-  @IsBoolean()
-  hasSubToDos?: boolean;
-
-  @IsOptional()
   @IsInt()
   parentToDoId?: number;
 }
@@ -33,10 +29,6 @@ export class UpdateToDoDto {
   @IsOptional()
   @IsBoolean()
   completed?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  hasSubToDos?: boolean;
 
   @IsOptional()
   @IsInt()

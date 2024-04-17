@@ -46,12 +46,4 @@ export class ToDo extends Model<ToDo> {
 
   @HasMany(() => ToDo, 'parentToDoId')
   subToDos: ToDo[];
-
-  @Column({
-    type: DataType.BOOLEAN,
-    allowNull: false,
-    defaultValue: false,
-  })
-  @IsBoolean()
-  hasSubToDos: boolean;
 }
