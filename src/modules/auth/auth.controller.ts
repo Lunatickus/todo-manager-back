@@ -31,9 +31,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
-  logout(@Req() request): boolean {
+  logout(@Req() request) {
     delete request.headers.authorization;
-    return true;
+    return { status: 'success' };
   }
 
   @UseGuards(JwtAuthGuard)

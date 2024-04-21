@@ -11,12 +11,16 @@ export class CreateUserDTO {
   password: string;
 }
 
-export class UserDTO {
+class RegisterUserDTO {
   @IsString()
   name: string;
 
   @IsString()
   email: string;
+}
+
+export class UserDTO {
+  user: RegisterUserDTO;
 
   @IsString()
   token: string;

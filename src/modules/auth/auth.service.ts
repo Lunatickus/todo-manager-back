@@ -20,10 +20,10 @@ export class AuthService {
       const existUser = await this.userService.findUserByEmail(dto.email);
       if (existUser) throw new BadRequestException(AppError.USER_EXIST);
 
-      const user = await this.userService.createUser(dto);
-      const userWithoutPassword = { email: user.email, name: user.name };
+      await this.userService.createUser(dto);
+      const user = await this.userService.publicUser(dto.email);
       const token = await this.tokenService.generateJwtToken(user);
-      return { ...userWithoutPassword, token };
+      return { user, token };
     } catch (error) {
       throw new Error(error);
     }
